@@ -1,0 +1,29 @@
+/*
+ *	@Package : WODPRESS XMLRPC 
+ *  @Author : Pham Van Diep
+ * 	@Contact : pndhainam@hotmail.com
+ */
+
+#ifndef POST_CUSTOM_FIELDS_H
+#define POST_CUSTOM_FIELDS_H
+#include "inc/debug.h"
+#include "wordpress.h"
+class Postcustomfield
+{
+private:
+       QString id;
+       QString key;
+       QString value; 
+public :
+        Postcustomfield();
+        virtual ~Postcustomfield();
+        QStringList Postcustomfield_map_to_qstringlist();
+        void Postcustomfield_set_id(QString id);
+        void Postcustomfield_set_key(QString key);
+        void Postcustomfield_set_value(QString value);
+        void Postcustomfield_set_all(QString id ,QString key ,QString value);
+        QString Postcustomfield_get_id();
+        QString Postcustomfield_get_key();
+        QString Postcustomfield_get_value();
+};
+#endif

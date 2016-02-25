@@ -1,0 +1,9 @@
+#ifndef __TERM_H
+#define __TERM_H
+#include "wordpress.h"
+#include "inc/debug.h"
+class Term
+{
+
+};
+#endif

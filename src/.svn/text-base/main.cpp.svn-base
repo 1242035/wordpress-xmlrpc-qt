@@ -1,0 +1,63 @@
+#include <QApplication>
+#include "wordpress.h"
+#include "tag.h"
+#include "userblog.h"
+#include "option.h"
+#include "comment.h"
+#include "category.h"
+#include "user.h"
+#include "media.h"
+#include "taxonomy.h"
+//#include <time.h>
+#include <sys/time.h>
+#include <iostream>
+
+unsigned GetTimeInMilli() {	
+        struct timeval tv; // Declare timeval
+        
+        /* structure definition of timeval is
+         struct timeval {
+              time_t      tv_sec;      seconds 
+              suseconds_t tv_usec;    microseconds
+        };*/
+        
+        if (gettimeofday(&tv, NULL) != 0) {
+        	//gettimeofday() can get the time as well as a timezone
+                return 0;
+        }
+
+        return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+}
+
+//using namespace std;
+int main ( int argc ,char **argv)
+{
+
+QApplication app(argc ,argv);
+unsigned start = GetTimeInMilli();
+Taxonomy t;
+t.Taxonomy_get_taxonomy();
+
+Media m;
+m.Media_get_media();
+//User u;
+//u.User_get_users();
+
+Category c;
+c.Category_get_category();
+Tag tag;
+tag.Tag_get_tag();
+
+//Userblog user;
+//user.Userblog_add_new();
+
+Comment cm;
+cm.Comment_get_all_comment();
+
+Option option;
+option.Option_get_option();
+time_t seconds;
+seconds = time (NULL);
+qDebug()<<"\n>Time exec:"<<GetTimeInMilli()-start<<" ms .";
+return app.exec();
+}

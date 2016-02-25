@@ -1,0 +1,120 @@
+/*
+ *	@Package : WODPRESS XMLRPC 
+ *  @Author : Pham Van Diep
+ * 	@Contact : pndhainam@hotmail.com
+ */
+
+#include "user.h"
+User::User()
+{
+	this->tablename = "user";
+	this->size = 12;
+	this->User_db = new Database();
+	Userblog user;
+	QString host = user.Userblog_get_blog_host();
+	QString path = user.Userblog_get_blog_path();
+	int port = user.Userblog_get_blog_port();
+	QString blogid = user.Userblog_get_blog_id();
+	QString username = user.Userblog_get_blog_username();
+	QString pass = user.Userblog_get_blog_password();
+	this->User_wp = new Wordpress(host,path,port,username,pass);
+	this->User_wp->Base_set_blog_id(blogid);
+	
+	connect(this->User_wp,SIGNAL(Wordpress_OK(QVariant)),this,SLOT(User_get_users_ok(QVariant)));
+	connect(this->User_wp,SIGNAL(Wordpress_FAILED(int ,QString)),this,SLOT(User_get_users_failed(int ,QString)));
+}
+User::~User()
+{
+	delete this->User_db;
+	delete this->User_wp;
+}
+QString User::User_get_user_id(){return this->userid ;}
+QString User::User_get_user_name(){return this->username ;}
+QString User::User_get_first_name(){return this->firstname ;}
+QString User::User_get_last_name(){return this->lastname ;}
+QString User::User_get_bio(){return this->bio ;}
+QString User::User_get_email(){return this->email ;}
+QString User::User_get_nick_name(){return this->nickname ;}
+QString User::User_get_nice_name(){return this->nicename ;}
+QString User::User_get_url(){return this->url ;}
+QString User::User_get_display_name(){return this->displayname ;}
+QString User::User_get_registered(){return this->registered ;}
+QString User::User_get_roles(){return this->roles ;}
+//set
+void User::User_set_user_id(QString user_id){this->userid = user_id ;}
+void User::User_set_user_name(QString user_name){this->username = user_name ;}
+void User::User_set_first_name(QString first_name){this->firstname = first_name ;}
+void User::User_set_last_name(QString last_name){this->lastname = last_name ;}
+void User::User_set_bio(QString bio){this->bio = bio ;}
+void User::User_set_email(QString email){this->email = email ;}
+void User::User_set_nick_name(QString nick_name){this->nickname = nick_name ;}
+void User::User_set_nice_name(QString nice_name){this->nicename = nice_name ;}
+void User::User_set_url(QString url){this->url = url ;}
+void User::User_set_display_name(QString display_name){this->displayname = display_name ;}
+void User::User_set_registered(QString registered){this->registered = registered ;}
+void User::User_set_roles(QString roles){this->roles = roles ;}
+void User::User_get_users(){
+	this->User_wp->Wordpress_getusers();
+}
+void User::User_get_users_failed(int code,QString msg){
+	QMessageBox::critical(NULL,"Error",QString::number(code) + " => " + msg);
+}
+void User::User_get_users_ok( QVariant result){
+	QList<QStringList> list;
+        list = MVariant(result).get_qlistqstringlist();
+	QStringList what;
+	this->User_db->Database_select(this->tablename);
+	int id = this->User_db->Database_num_rows();
+	int i = 0;
+	while(i < list.size()){
+		QList<QStringList> sublist = list.mid(i,this->size);
+		foreach(QStringList item,sublist){
+			if(item.at(0).compare("user_id") == 0){
+				this->userid = item.at(1);
+			}
+			if(item.at(0).compare("username") == 0){
+				this->username = item.at(1);
+			}
+			if(item.at(0).compare("first_name") == 0){
+				this->firstname = item.at(1);
+			}
+			if(item.at(0).compare("last_name") == 0){
+				this->lastname = item.at(1);
+			}
+			if(item.at(0).compare("bio") == 0){
+				this->bio = item.at(1);
+			}
+			if(item.at(0).compare("email") == 0){
+				this->email = item.at(1);
+			}
+			if(item.at(0).compare("nickname") == 0){
+				this->nickname = item.at(1);
+			}
+			if(item.at(0).compare("nicename") == 0){
+				this->nicename = item.at(1);
+			}
+			if(item.at(0).compare("url") == 0){
+				this->url = item.at(1);
+			}
+			if(item.at(0).compare("display_name") == 0){
+				this->displayname = item.at(1);
+			}
+			if(item.at(0).compare("registered") == 0){
+				this->registered = item.at(1);
+			}
+			if(item.at(0).compare("roles") == 0){
+				this->roles = item.at(1);
+			}
+	
+        	}
+		id++;
+		what<<QString::number(id)<<this->userid<<this->username<<this->firstname\
+		<<this->lastname<<this->bio<<this->email<<this->nickname<<this->nicename \
+		<<this->url<<this->displayname<<this->registered<<this->roles;
+		this->User_db->Database_insert(this->tablename,what);
+		what.clear();
+		i = i + this->size;
+	}
+		
+}
+	

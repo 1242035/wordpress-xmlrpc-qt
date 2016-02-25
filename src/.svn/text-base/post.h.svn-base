@@ -1,0 +1,41 @@
+#ifndef __POST_H
+#define __POST_H
+#include "wordpress.h"
+#include "media.h"
+#include "term.h"
+#include "enclosure.h"
+#include "postcustomfield.h"
+#include "inc/debug.h"
+class Post
+{
+    private:
+        QString post_id;
+        QString post_title;
+        QDateTime post_date;
+        QDateTime post_date_gmt;
+        QDateTime post_modified;
+        QDateTime post_modified_gmt;
+        QString post_status;
+        QString post_type;
+        QString post_format;
+        QString post_name;
+        QString post_author;
+        QString post_password;
+        QString post_excerpt;
+        QString post_content;
+        QString post_parent;
+        QString post_mime_type;
+        QString link;
+        QString guid;
+        int menu_order;
+        QString comment_status;
+        QString ping_status;
+        bool sticky;
+        Media post_thumbnail;
+        Term *terms;//array
+        Postcustomfield *custom_fields;//array 
+        Enclosure enclosure;
+        QString metafield;
+
+};
+#endif

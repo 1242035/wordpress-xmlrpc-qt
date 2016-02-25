@@ -1,0 +1,88 @@
+#include "option.h"
+Option::Option(){
+	this->size = 3;
+	Userblog user;
+	QString host = user.Userblog_get_blog_host();
+	QString path = user.Userblog_get_blog_path();
+	int port = user.Userblog_get_blog_port();
+	QString blogid = user.Userblog_get_blog_id();
+	QString username = user.Userblog_get_blog_username();
+	QString pass = user.Userblog_get_blog_password();
+	this->tablename = "options";
+	this->Option_db = new Database();
+	this->Option_wp = new Wordpress(host,path,port,username,pass);
+	this->Option_wp->Base_set_blog_id(blogid);
+	connect(this->Option_wp,SIGNAL(Wordpress_OK(QVariant)),this,SLOT(Option_get_ok(QVariant)));
+	connect(this->Option_wp,SIGNAL(Wordpress_FAILED(int ,QString)),this,SLOT(Option_get_failed(int ,QString)));
+	
+}
+Option::~Option(){
+	delete this->Option_db;
+	delete this->Option_wp;
+}
+void Option::Option_get_ok(QVariant result){
+	MVariant res(result);
+	QList<QStringList> list = res.get_qlistqstringlist();
+	QStringList what;
+	this->Option_db->Database_select(this->tablename);
+	int id = this->Option_db->Database_num_rows();
+	int i = 0;
+	while(i < list.size()){
+		QList<QStringList> sub = list.mid(i,this->size);
+		foreach(QStringList item ,sub){
+			if((item.size() == 3) && (item.at(1).compare("desc") == 0)){
+				this->option_name = item.at(0);
+				this->desc = item.at(2);
+			}
+			if(item.at(0).compare("readonly") == 0){
+				this->readonly = item.at(1).toInt();
+			}
+			if(item.at(0).compare("value") == 0){
+				this->value = item.at(1);
+			}
+		
+		}
+		id++;
+		what<<QString::number(id)<<this->option_name<<this->desc<<this->value<<QString::number(this->readonly);
+		this->Option_db->Database_insert(this->tablename,what);
+		what.clear();
+		i = i + this->size;
+	}
+	
+}
+void Option::Option_get_failed(int code ,QString msg){
+	QMessageBox::critical(NULL,"Error",QString::number(code) + " => " + msg);	
+}
+void Option::Option_get_option()
+{
+	QStringList option;
+	this->Option_wp->Wordpress_getoptions(option);
+}
+void Option::Option_get_option_from_db(int id){
+	QStringList what,where;
+	where<<"id = "+QString::number(id);	
+	if(this->Option_db->Database_select(this->tablename,what,where)){
+		if(this->Option_db->Database_num_rows() == 0){
+			QMessageBox::information(NULL,"Infomation","There no record on database");
+		}else{
+			QStringList list = this->Option_db->Database_fetch_row(0);
+					//0 is id
+			this->desc = list.at(1);
+			this->value = list.at(2);
+			this->readonly = list.at(3).toInt();
+        	}
+	 }else{
+		 QMessageBox::critical(NULL,"Error","Database failed ,please try again !");
+	 }
+}
+void Option::Option_set_name(QString name){this->option_name = name ;}
+void Option::Option_set_desc(QString desc){this->desc = desc ;}
+void Option::Option_set_value(QString value){this->value = value ;}
+void Option::Option_set_readonly(bool readonly){this->readonly = readonly ;}
+void Option::Option_set_all(QString desc,QString value,bool readonly){
+this->desc = desc ;this->value = value ;this->readonly = readonly;	
+}
+QString Option::Option_get_name(){return this->option_name ;}
+QString Option::Option_get_desc(){return this->desc ;}
+QString Option::Option_get_value(){return this->value ;}
+bool Option::Option_get_readonly(){return this->readonly ;}

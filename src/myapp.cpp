@@ -1,0 +1,90 @@
+/*
+ *	@Package : WODPRESS XMLRPC 
+ *  @Author : Pham Van Diep
+ * 	@Contact : pndhainam@hotmail.com
+ */
+
+#include "myapp.h"
+#include <QMessageBox>
+Myapp::Myapp(QString host,QString path ,int port ,QString username , QString password,QWidget *parent):QMainWindow(parent)
+{
+        //this->MA_ui.setupUi(this);
+        //this->connect(this->MA_ui.action_exit, SIGNAL(clicked()), this, SLOT(MA_close()));
+        //this->connect(this->MA_ui.action_add_blog, SIGNAL(clicked()), this, SLOT(MA_add_blog()));
+        //this->connect(this->MA_ui.action_delete_blog, SIGNAL(clicked()), this, SLOT(MA_delete_blog()));
+        //this->connect(this->MA_ui.action_about, SIGNAL(clicked()), this, SLOT(MA_help()));
+        //this->connect(this->MA_ui.btn_post, SIGNAL(clicked()), this, SLOT(MA_post()));
+        //this->MA_base = new Base(host,path,port,username,password);
+        //this->MA_db = new Database();
+        this->WP = new Wordpress(host,path,port,username,password);
+        this->MA_ui_list<<"ui/frmmain.ui"<<"ui/dlgaddblog.ui";
+
+}
+Myapp::~Myapp()
+{
+       // delete this->MA_base;
+        delete this->WP;
+}
+//void Myapp::MA_run(){
+//QStringList param;
+//this->wp->sent_request("wp.getUsersBlogs",param);
+//}
+//this is slots
+/*void Myapp::MA_success()
+{
+        QList<QVariant> items = this->result.toList();
+        QString value;
+        foreach(QVariant item ,items){
+                        QMap<QString,QVariant> map = item.toMap();
+                        QMap<QString, QVariant>::const_iterator i = map.constBegin();
+                        while (i != map.constEnd()) {
+                                value+= i.key() ;
+                                value += ": ";
+                                value+= i.value().toString();
+                                value += "\r";
+                        ++i;
+                }
+         }
+ 
+        ui.txt_postcontent->setPlainText(value);
+}*/
+void Myapp::MA_run(int ui_id)
+{
+        QUiLoader loader;
+        if(ui_id < 0){
+             ui_id = 0;        
+        }
+        QString ui_name = this->MA_ui_list.at(ui_id);
+        QFile file(ui_name);
+        QWidget *sortDialog = loader.load(&file);
+        if (sortDialog) {
+             sortDialog->show();
+        }       
+}
+void Myapp::MA_close()
+{
+        qApp->quit();
+}
+void Myapp::MA_add_blog()
+{
+        Addblog *add = new Addblog();
+        add->exec();
+        //ui.txt_postcontent->setPlainText("This is menu add blog");
+}
+void Myapp::MA_delete_blog()
+{
+        //MA_ui.txt_postcontent->setPlainText("This is menu delete blog");
+}
+void Myapp::MA_help()
+{
+        QMessageBox::about(this,"About : ","REMOTE BLOGS  :\r\n \
+        Authors: abc@abc.com \r\n \
+        Version : 1.0 \r\n \
+        Lienciecs : This is open source remote blog Myapp.");
+}
+void Myapp::MA_post()
+{
+       // QString content = MA_ui.txt_postcontent->toPlainText();
+        //QMessageBox::about(this,"Content : ",content);
+}
+

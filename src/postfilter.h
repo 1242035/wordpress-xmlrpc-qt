@@ -1,0 +1,39 @@
+/*
+ *	@Package : WODPRESS XMLRPC 
+ *  @Author : Pham Van Diep
+ * 	@Contact : pndhainam@hotmail.com
+ */
+
+#ifndef __POSTFILTER_H
+#define __POSTFILTER_H
+#include "wordpress.h"
+#include "inc/debug.h"
+
+class Postfilter
+{
+private:
+    QString Postfilter_post_type;
+    QString Postfilter_post_status;
+    int Postfilter_number;
+    int Postfilter_offset;
+    QString Postfilter_orderby;
+    QString Postfilter_order;
+public :
+        Postfilter();
+        virtual ~Postfilter();
+        void Postfilter_set_post_type(QString post_type); 
+        void Postfilter_set_post_status(QString post_status);
+        void Postfilter_set_post_number(int number);
+        void Postfilter_set_post_offset(int offset);
+        void Postfilter_set_post_ordeby(QString orderby);
+        void Postfilter_set_post_order(QString order);
+        void Postfilter_set_all(QString ,QString ,int ,int ,QString ,QString);
+        QString Postfilter_get_post_type();
+        QString Postfilter_get_post_status();
+        int Postfilter_get_post_number();
+        int Postfilter_get_post_offset();
+        QString Postfilter_get_post_orderby();
+        QString Postfilter_get_post_order();
+        QStringList Postfilter_map_to_qstringlist();
+};
+#endif
